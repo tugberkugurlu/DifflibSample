@@ -30,7 +30,8 @@ namespace DifflibSample.Controllers
             var viewModel = new DiffViewModel
             {
                 Before = Read(beforeFile),
-                After = Read(afterFile)
+                After = Read(afterFile),
+                ExpectedResultPicturePath = $"/lib/pictures/{diff}.png"
             };
 
             return View(viewModel);
@@ -56,25 +57,12 @@ namespace DifflibSample.Controllers
                 return lines.ToArray();
             }
         }
-
-        private static byte[] ReadFully(Stream input)
-        {
-            byte[] buffer = new byte[16 * 1024];
-            using (MemoryStream ms = new MemoryStream())
-            {
-                int read;
-                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    ms.Write(buffer, 0, read);
-                }
-                return ms.ToArray();
-            }
-        }
     }
 
     public class DiffViewModel
     {
         public string[] Before { get; set; }
         public string[] After { get; set; }
+        public string ExpectedResultPicturePath { get; set; }
     }
 }

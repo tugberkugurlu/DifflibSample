@@ -1,0 +1,46 @@
+﻿body {
+    padding-top: 55px;
+}
+
+.starter-template {
+    text-align: center;
+    padding: 0px 100px;
+}
+
+.diff-container {
+    list-style-type: none;
+    margin-top: 10px;
+    padding: 0 10px;
+    border: 1px solid gray;
+    text-align: left;
+}
+
+    .diff-container li {
+        padding: 0 5px;
+        margin: 0;
+    }
+
+.blob-code-inner {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 12px;
+    color: #333;
+    white-space: pre;
+    overflow: visible;
+    word-wrap: normal;
+}
+
+.blob-code-deletion {
+    background-color: #ffecec;
+}
+
+    .blob-code-deletion .x {
+        background-color: #f8cbcb;
+    }
+
+.blob-code-addition {
+    background-color: #eaffea;
+}
+
+    .blob-code-addition .x {
+        background-color: #a6f3a6;
+    }

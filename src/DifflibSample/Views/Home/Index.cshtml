@@ -10,53 +10,91 @@
 
     <!-- Bootstrap core CSS -->
     <link href="~/lib/bootstrap/css/bootstrap.css" rel="stylesheet">
-    <link href="~/site.css" rel="stylesheet">
+    <link href="~/lib/site.css" rel="stylesheet">
 </head>
 
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#">Project name</a>
-            </div>
-            <div id="navbar" class="collapse navbar-collapse">
-                <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </div><!--/.nav-collapse -->
-        </div>
+        <div class="container"></div>
     </nav>
 
     <div class="container">
 
         <div class="starter-template">
-            <h1>Bootstrap starter template</h1>
-            <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
+            <img data-bind="attr:{src: diff().expectedImage}" alt="pic" />
+            <ul class="diff-container" data-bind="foreach: diff().lines">
+                <li data-bind="css: 'blob-code-' + type()">
+                    <span class="blob-code-inner" data-bind="text: data"></span>
+                </li>
+            </ul>
         </div>
 
     </div><!-- /.container -->
 
     <script src="~/lib/jquery/jquery.js"></script>
+    <script src="~/lib/knockout/knockout.js"></script>
     <script src="~/lib/underscore/underscore.js"></script>
     <script src="~/lib/bootstrap/js/bootstrap.js"></script>
-    <script src="~/difflib-browser.js"></script>
+    <script src="~/lib/difflib-browser.js"></script>
     <script>
         (function () {
+            if (typeof String.prototype.startsWith != 'function') {
+                String.prototype.startsWith = function (str){
+                    return this.slice(0, str.length) == str;
+                };
+            }
+
             var before = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Before)),
                 after = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.After)),
-                diff = difflib.ndiff(before, after);
+                diff = difflib.ndiff(before, after),
+                decideLineType = function(data) {
+                    var type = 'normal',
+                        firstChar = data.slice(0, 1);
 
+                    switch (firstChar) {
+                        case '-':
+                            type = 'deletion';
+                            break;
+
+                        case '+':
+                            type = 'addition';
+                            break;
+
+                        case '?':
+                            type = 'intra-line';
+                            break;
+                    }
+
+                    return type;
+                },
+                Diff = function(){
+                    var self = this;
+                    self.expectedImage = ko.observable();
+                    self.lines = ko.observableArray();
+                },
+                DiffLine = function() {
+                    var self = this;
+                    self.type = ko.observable();
+                    self.data = ko.observable();
+                },
+                vm = {
+                    diff: ko.observable()
+                },
+
+                diffVm = new Diff();
+
+            diffVm.expectedImage('@Model.ExpectedResultPicturePath');
             _.each(diff, function(e) {
                 console.log(e);
+                var diffLine = new DiffLine()
+                    .type(decideLineType(e))
+                    .data(e);
+
+                diffVm.lines.push(diffLine);
             });
+
+            vm.diff(diffVm);
+            ko.applyBindings(vm);
         }());
     </script>
 </body>

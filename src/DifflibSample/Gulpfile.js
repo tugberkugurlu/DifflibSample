@@ -19,6 +19,7 @@ gulp.task("copy", ["clean"], function () {
     var bower = {
         "bootstrap": "bootstrap/dist/**/*.{js,map,css,ttf,svg,woff,eot}",
         "underscore": "underscore/underscore.js",
+        "knockout": "knockout/dist/knockout.js",
         "bootstrap-touch-carousel": "bootstrap-touch-carousel/dist/**/*.{js,css}",
         "hammer.js": "hammer.js/hammer*.{js,map}",
         "jquery": "jquery/dist/jquery*.{js,map}",
@@ -30,4 +31,6 @@ gulp.task("copy", ["clean"], function () {
         gulp.src(paths.bower + bower[destinationDir])
           .pipe(gulp.dest(paths.lib + destinationDir));
     }
+
+    gulp.src("Client/**/*").pipe(gulp.dest(paths.lib));
 });
